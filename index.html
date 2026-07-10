@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login — 10X CRM</title>
+  <meta name="description" content="Sign in to 10X CRM — the smart sales CRM for high-performing teams.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="auth-page">
+
+  <!-- Animated background -->
+  <div class="auth-bg">
+    <div class="auth-bg-gradient"></div>
+    <div class="auth-bg-grid"></div>
+  </div>
+
+  <!-- Login Card -->
+  <div class="auth-container">
+    <div class="auth-card fade-in-up">
+
+      <div class="auth-logo">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">10X CRM</span>
+      </div>
+
+      <h1 class="auth-title">Welcome back</h1>
+      <p class="auth-subtitle">Sign in to continue to your dashboard</p>
+
+      <form id="login-form" novalidate>
+
+        <div class="form-group">
+          <label class="form-label" for="email">Email</label>
+          <input
+            type="text"
+            id="email"
+            class="form-input"
+            placeholder="you@example.com"
+            autocomplete="email"
+          >
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-wrapper">
+            <input
+              type="password"
+              id="password"
+              class="form-input"
+              placeholder="••••••••"
+              autocomplete="current-password"
+            >
+            <button type="button" class="toggle-password" onclick="togglePassword('password')" tabindex="-1" aria-label="Toggle password visibility">👁</button>
+          </div>
+        </div>
+
+        <button type="submit" id="login-btn" class="btn btn-primary btn-full" style="margin-top:0.5rem">
+          Log In
+        </button>
+
+      </form>
+
+      <p class="auth-link">Don't have an account? <a href="signup.html">Sign up</a></p>
+
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+
+  <script src="js/storage.js"></script>
+  <script src="js/guard.js"></script>
+  <script src="js/toast.js"></script>
+  <script src="js/auth.js"></script>
+  <script>initLogin();</script>
+</body>
+</html>

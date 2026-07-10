@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — 10X CRM</title>
+  <meta name="description" content="Your 10X CRM dashboard — real-time sales statistics, pipeline overview, and recent client activity.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="dashboard.html" aria-label="Go to dashboard">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">10X CRM</span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="dashboard.html" class="nav-link" id="nav-dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="clients.html" class="nav-link" id="nav-clients">
+        <span class="nav-icon">👥</span> Clients
+      </a>
+      <a href="profile.html" class="nav-link" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
+      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ──────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Header: greeting + live clock -->
+    <header class="page-header">
+      <div>
+        <h1>Welcome back, <span id="welcome-name">...</span>! 👋</h1>
+        <div class="live-clock">
+          <span id="live-date"></span>
+          <span id="live-time" style="font-weight:600; color:var(--text-primary)"></span>
+        </div>
+      </div>
+      <a href="clients.html" class="btn btn-primary">
+        + Add Client
+      </a>
+    </header>
+
+    <!-- P3.2 — Stat Cards -->
+    <div class="stats-grid section-gap">
+
+      <div class="stat-card">
+        <span class="stat-icon">👥</span>
+        <p class="stat-label">Total Clients</p>
+        <p class="stat-value" id="stat-total">—</p>
+      </div>
+
+      <div class="stat-card accent">
+        <span class="stat-icon">⚡</span>
+        <p class="stat-label">Active Deals</p>
+        <p class="stat-value" id="stat-active">—</p>
+      </div>
+
+      <div class="stat-card success">
+        <span class="stat-icon">💰</span>
+        <p class="stat-label">Won Revenue</p>
+        <p class="stat-value" id="stat-revenue">—</p>
+      </div>
+
+      <div class="stat-card">
+        <span class="stat-icon">🆕</span>
+        <p class="stat-label">New This Week</p>
+        <p class="stat-value" id="stat-new">—</p>
+      </div>
+
+    </div>
+
+    <!-- P3.3 Pipeline + P3.4 Recent Clients -->
+    <div class="dashboard-grid">
+
+      <!-- Pipeline Overview -->
+      <section class="section-card" aria-label="Pipeline overview">
+        <div class="section-header">
+          <h2 class="section-title">Pipeline Overview</h2>
+        </div>
+
+        <div class="pipeline-list">
+          <div class="pipeline-item" id="pipeline-lead">
+            <span class="pipeline-label">Lead</span>
+            <div class="pipeline-bar"><div class="pipeline-bar-fill" style="width:0%"></div></div>
+            <span class="pipeline-count">0</span>
+          </div>
+          <div class="pipeline-item" id="pipeline-contacted">
+            <span class="pipeline-label">Contacted</span>
+            <div class="pipeline-bar"><div class="pipeline-bar-fill" style="width:0%"></div></div>
+            <span class="pipeline-count">0</span>
+          </div>
+          <div class="pipeline-item" id="pipeline-won">
+            <span class="pipeline-label">Won</span>
+            <div class="pipeline-bar"><div class="pipeline-bar-fill" style="width:0%"></div></div>
+            <span class="pipeline-count">0</span>
+          </div>
+          <div class="pipeline-item" id="pipeline-lost">
+            <span class="pipeline-label">Lost</span>
+            <div class="pipeline-bar"><div class="pipeline-bar-fill" style="width:0%"></div></div>
+            <span class="pipeline-count">0</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- Recent Clients -->
+      <section class="section-card" aria-label="Recent clients">
+        <div class="section-header">
+          <h2 class="section-title">Recent Clients</h2>
+          <a href="clients.html" class="view-all-link">View all →</a>
+        </div>
+
+        <div id="recent-clients-list">
+          <div class="loading-state" style="padding:2rem 0">
+            <div class="spinner"></div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/guard.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/dashboard.js"></script>
+<script>initDashboard();</script>
+</body>
+</html>
