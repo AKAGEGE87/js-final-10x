@@ -177,3 +177,20 @@ function togglePassword(fieldId) {
   const field = document.getElementById(fieldId);
   if (field) field.type = field.type === 'password' ? 'text' : 'password';
 }
+
+function initNameCounter() {
+  const input   = document.getElementById('fullName');
+  const counter = document.getElementById('name-counter');
+  if (!input || !counter) return;
+
+  input.addEventListener('input', () => {
+    const len = input.value.length;
+    counter.textContent = `${len} / 50`;
+    // Warn style if getting close to limit
+    if (len >= 45) {
+      counter.style.color = 'var(--danger)';
+    } else {
+      counter.style.color = 'var(--text-muted)';
+    }
+  });
+}

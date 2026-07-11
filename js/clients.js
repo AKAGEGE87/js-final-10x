@@ -177,11 +177,21 @@ function updateChipCounts() {
   });
 }
 
+function highlightHTML(text, query) {
+  if (!query || !text) return text;
+  const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const reg = new RegExp(`(${escapedQuery})`, 'gi');
+  return text.replace(reg, '<mark class="highlight">$1</mark>');
+}
+
 function buildClientCard(c) {
   const avatar = c.image || avatarUrl(c.name, 56);
   const opts   = ['Lead', 'Contacted', 'Won', 'Lost']
     .map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`)
     .join('');
+
+  const nameHTML = highlightHTML(c.name, searchQuery);
+  const compHTML = highlightHTML(c.company || '—', searchQuery);
 
   return `
     <div class="client-card" data-id="${c.id}">
@@ -189,8 +199,8 @@ function buildClientCard(c) {
         <img src="${avatar}" alt="${c.name}" class="client-avatar"
           onerror="this.src='${avatarUrl(c.name, 56)}'">
         <div class="client-info">
-          <h3 class="client-name">${c.name}</h3>
-          <p class="client-company">${c.company || '—'}</p>
+          <h3 class="client-name">${nameHTML}</h3>
+          <p class="client-company">${compHTML}</p>
           <p class="client-email">${c.email}</p>
         </div>
       </div>
