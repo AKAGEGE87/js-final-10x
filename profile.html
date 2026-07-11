@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile — 10X CRM</title>
+  <meta name="description" content="Manage your 10X CRM profile — update your name, company, and password.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="dashboard.html" aria-label="Go to dashboard">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">10X CRM</span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="dashboard.html" class="nav-link" id="nav-dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="clients.html" class="nav-link" id="nav-clients">
+        <span class="nav-icon">👥</span> Clients
+      </a>
+      <a href="profile.html" class="nav-link" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
+      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ──────────────────────────────────── -->
+  <main class="main-content">
+
+    <header class="page-header">
+      <div>
+        <h1>Profile</h1>
+        <p class="text-secondary" style="margin-top:0.2rem; font-size:0.9rem">Manage your account settings</p>
+      </div>
+    </header>
+
+    <!-- P5 — Profile layout: info card + forms -->
+    <div class="profile-layout">
+
+      <!-- P5.1 — User info card (left column) -->
+      <aside>
+        <div class="profile-card">
+          <!-- Initials avatar (string methods: split + map + join) -->
+          <div class="profile-avatar-initials" id="profile-avatar">NB</div>
+
+          <h2 class="profile-display-name"  id="profile-name">—</h2>
+          <p class="profile-display-email"   id="profile-email">—</p>
+          <p class="profile-display-company" id="profile-company">—</p>
+          <p class="profile-display-since"   id="profile-since">—</p>
+        </div>
+      </aside>
+
+      <!-- Right column: edit forms -->
+      <div class="profile-forms">
+
+        <!-- P5.2 — Edit Profile Form -->
+        <div class="form-card">
+          <h2>Edit Profile</h2>
+
+          <form id="profile-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="edit-fullName">Full Name</label>
+              <input type="text" id="edit-fullName" class="form-input" placeholder="Nino Beridze">
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="edit-company">Company</label>
+              <input type="text" id="edit-company" class="form-input" placeholder="Company (optional)">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Changes</button>
+          </form>
+        </div>
+
+        <!-- P5.3 — Change Password Form -->
+        <div class="form-card">
+          <h2>Change Password</h2>
+
+          <form id="password-form" novalidate>
+            <div class="form-group">
+              <label class="form-label" for="current-password">Current Password</label>
+              <div class="input-wrapper">
+                <input type="password" id="current-password" class="form-input" placeholder="••••••••" autocomplete="current-password">
+                <button type="button" class="toggle-password" onclick="togglePwd('current-password')" tabindex="-1" aria-label="Toggle">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="new-password">New Password</label>
+              <div class="input-wrapper">
+                <input type="password" id="new-password" class="form-input" placeholder="••••••••" autocomplete="new-password">
+                <button type="button" class="toggle-password" onclick="togglePwd('new-password')" tabindex="-1" aria-label="Toggle">👁</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="confirm-new-password">Confirm New Password</label>
+              <div class="input-wrapper">
+                <input type="password" id="confirm-new-password" class="form-input" placeholder="••••••••" autocomplete="new-password">
+                <button type="button" class="toggle-password" onclick="togglePwd('confirm-new-password')" tabindex="-1" aria-label="Toggle">👁</button>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Change Password</button>
+          </form>
+        </div>
+
+        <!-- P5.4 — Reset CRM Data -->
+        <div class="form-card">
+          <h2>Data Management</h2>
+          <div class="reset-zone">
+            <div>
+              <p style="font-weight:500; margin-bottom:0.25rem">Reset CRM Data</p>
+              <p>Delete all client data and reload the original 30 records from the API. Your account will not be affected.</p>
+            </div>
+            <button id="reset-data-btn" class="btn btn-danger" style="flex-shrink:0">
+              Reset Data
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /profile-forms -->
+    </div><!-- /profile-layout -->
+
+  </main>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/guard.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/profile.js"></script>
+<script>
+  initProfile();
+  // Local helper for password toggle on this page
+  function togglePwd(id) {
+    const f = document.getElementById(id);
+    if (f) f.type = f.type === 'password' ? 'text' : 'password';
+  }
+</script>
+</body>
+</html>

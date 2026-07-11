@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clients — 10X CRM</title>
+  <meta name="description" content="Manage your sales clients in 10X CRM — add, filter, search, and track every deal in your pipeline.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- ── Sidebar ─────────────────────────────────────── -->
+  <aside class="sidebar">
+    <div class="sidebar-logo">
+      <a href="dashboard.html" aria-label="Go to dashboard">
+        <span class="logo-icon">⚡</span>
+        <span class="logo-text">10X CRM</span>
+      </a>
+    </div>
+
+    <nav class="sidebar-nav" aria-label="Main navigation">
+      <a href="dashboard.html" class="nav-link" id="nav-dashboard">
+        <span class="nav-icon">📊</span> Dashboard
+      </a>
+      <a href="clients.html" class="nav-link" id="nav-clients">
+        <span class="nav-icon">👥</span> Clients
+      </a>
+      <a href="profile.html" class="nav-link" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
+      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+    </div>
+  </aside>
+
+  <!-- ── Main Content ──────────────────────────────────── -->
+  <main class="main-content">
+
+    <!-- Page Header -->
+    <header class="page-header">
+      <div>
+        <h1>Clients</h1>
+        <p class="text-secondary" style="margin-top:0.2rem; font-size:0.9rem">Manage your sales pipeline</p>
+      </div>
+      <button id="add-client-btn" class="btn btn-primary" aria-label="Add new client">
+        + Add Client
+      </button>
+    </header>
+
+    <!-- P4.7 — Toolbar: Search + Filter chips + Sort -->
+    <div class="clients-toolbar">
+
+      <!-- Search -->
+      <div class="search-wrapper">
+        <span class="search-icon">🔍</span>
+        <input
+          type="text"
+          id="search-input"
+          class="search-input"
+          placeholder="Search by name or company..."
+          aria-label="Search clients"
+        >
+      </div>
+
+      <!-- Filter chips: All / Lead / Contacted / Won / Lost -->
+      <div class="filter-chips" role="group" aria-label="Filter by status">
+        <button class="filter-chip active" data-status="All">All</button>
+        <button class="filter-chip" data-status="Lead">Lead</button>
+        <button class="filter-chip" data-status="Contacted">Contacted</button>
+        <button class="filter-chip" data-status="Won">Won</button>
+        <button class="filter-chip" data-status="Lost">Lost</button>
+      </div>
+
+      <!-- Sort select: 3 options per PRD -->
+      <select id="sort-select" class="sort-select" aria-label="Sort clients">
+        <option value="newest">Newest first</option>
+        <option value="name">Name A→Z</option>
+        <option value="deal">Deal value: high → low</option>
+      </select>
+
+    </div>
+
+    <!-- P4.3 — Client cards list (rendered by JS) -->
+    <div id="clients-list" class="clients-grid">
+      <!-- Populated by renderClients() -->
+    </div>
+
+  </main>
+</div>
+
+<!-- ══════════════════════════════════════════
+     P4.4 — Add Client Modal
+══════════════════════════════════════════ -->
+<div id="add-client-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-modal-title">
+  <div class="modal-box">
+
+    <div class="modal-header">
+      <h2 class="modal-title" id="add-modal-title">Add New Client</h2>
+      <button class="modal-close" id="add-modal-close" aria-label="Close modal">×</button>
+    </div>
+
+    <form id="add-client-form" novalidate>
+      <div class="modal-body">
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="new-name">Full Name *</label>
+            <input type="text" id="new-name" class="form-input" placeholder="Emily Johnson">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-email">Email *</label>
+            <input type="text" id="new-email" class="form-input" placeholder="emily@company.com">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="new-phone">Phone</label>
+            <input type="text" id="new-phone" class="form-input" placeholder="+1 555 000 0000">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-company">Company</label>
+            <input type="text" id="new-company" class="form-input" placeholder="Acme Inc.">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label" for="new-deal">Deal Value ($) *</label>
+            <input type="number" id="new-deal" class="form-input" placeholder="5000" min="1">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="new-status">Status</label>
+            <select id="new-status" class="form-select">
+              <option value="Lead" selected>Lead</option>
+              <option value="Contacted">Contacted</option>
+              <option value="Won">Won</option>
+              <option value="Lost">Lost</option>
+            </select>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" id="add-modal-cancel"
+          onclick="document.getElementById('add-client-modal').classList.remove('modal-open')">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary">Add Client</button>
+      </div>
+    </form>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     P4.8 — Client Detail Modal
+══════════════════════════════════════════ -->
+<div id="detail-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="detail-client-name">
+  <div class="modal-box modal-wide">
+
+    <div class="modal-header" style="padding-bottom:1rem">
+      <h2 class="modal-title" id="detail-modal-heading">Client Details</h2>
+      <button class="modal-close" id="detail-modal-close" aria-label="Close modal">×</button>
+    </div>
+
+    <!-- Client hero info -->
+    <div class="detail-hero">
+      <img id="detail-avatar" src="" alt="Client avatar" class="detail-avatar">
+      <div class="detail-info">
+        <h2 id="detail-name">—</h2>
+        <p id="detail-company">—</p>
+        <span id="detail-status" class="badge badge-lead" style="margin-top:0.4rem">Lead</span>
+      </div>
+    </div>
+
+    <!-- Detail fields grid -->
+    <div class="detail-fields">
+      <div>
+        <p class="detail-field-label">Email</p>
+        <p class="detail-field-value" id="detail-email">—</p>
+      </div>
+      <div>
+        <p class="detail-field-label">Phone</p>
+        <p class="detail-field-value" id="detail-phone">—</p>
+      </div>
+      <div>
+        <p class="detail-field-label">Deal Value</p>
+        <p class="detail-field-value" id="detail-deal" style="color:var(--success); font-weight:700">—</p>
+      </div>
+      <div>
+        <p class="detail-field-label">Since</p>
+        <p class="detail-field-value" id="detail-since">—</p>
+      </div>
+    </div>
+
+    <!-- Notes section -->
+    <div class="notes-section">
+      <h3>📝 Notes</h3>
+
+      <!-- Notes list (scrollable) -->
+      <div id="notes-list" class="notes-list">
+        <p class="text-muted">No notes yet.</p>
+      </div>
+
+      <!-- Add note input -->
+      <div class="note-input-row">
+        <input
+          type="text"
+          id="note-input"
+          class="form-input"
+          placeholder="Add a note..."
+          aria-label="New note text"
+        >
+        <button id="add-note-btn" class="btn btn-primary" aria-label="Save note">Add</button>
+      </div>
+
+      <!-- Follow-up reminder (P4.8) -->
+      <button id="remind-btn" class="btn btn-secondary" style="width:100%">
+        ⏰ Remind me in 1 min
+      </button>
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container"></div>
+
+<script src="js/storage.js"></script>
+<script src="js/guard.js"></script>
+<script src="js/toast.js"></script>
+<script src="js/nav.js"></script>
+<script src="js/clients.js"></script>
+<script>initClients();</script>
+</body>
+</html>
