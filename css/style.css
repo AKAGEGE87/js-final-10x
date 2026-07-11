@@ -670,6 +670,23 @@ p { line-height: 1.6; }
 .stat-card.accent .stat-value { color: var(--accent); }
 .stat-card.success .stat-value { color: var(--success); }
 
+.stat-trend {
+  font-size: 0.75rem;
+  margin-top: 0.4rem;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-weight: 500;
+}
+
+.trend-up {
+  color: var(--success);
+}
+
+.trend-neutral {
+  color: var(--text-muted);
+}
+
 /* ══════════════════════════════════════════
    DASHBOARD SECTIONS
 ══════════════════════════════════════════ */
@@ -1461,6 +1478,16 @@ p { line-height: 1.6; }
 .fade-in { animation: fadeIn 0.3s ease; }
 .fade-in-up { animation: fadeInUp 0.4s ease; }
 
+.shake-anim {
+  animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px); }
+  75% { transform: translateX(6px); }
+}
+
 /* ══════════════════════════════════════════
    RESPONSIVE
 ══════════════════════════════════════════ */
@@ -1494,4 +1521,54 @@ p { line-height: 1.6; }
     transform: translateY(105vh) rotate(720deg);
     opacity: 0;
   }
+}
+
+/* Skeleton Loading (bonus) */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+}
+
+.skeleton-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.skeleton-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--border);
+}
+
+.skeleton-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.skeleton-line {
+  height: 12px;
+  background: var(--border);
+  border-radius: 4px;
+}
+
+.skeleton-line.short {
+  width: 50%;
+}
+
+.skeleton-line.long {
+  width: 80%;
+}
+
+.pulse-anim {
+  animation: pulse 1.5s infinite ease-in-out;
 }

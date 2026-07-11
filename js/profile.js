@@ -109,6 +109,10 @@ function setupResetData() {
   if (!btn) return;
 
   btn.addEventListener('click', async () => {
+    // Visual shake feedback (bonus)
+    btn.classList.add('shake-anim');
+    btn.addEventListener('animationend', () => btn.classList.remove('shake-anim'), { once: true });
+
     if (!confirm('This will reset all client data to the original 30 records. Your account will not be affected. Continue?')) return;
 
     clearClients();

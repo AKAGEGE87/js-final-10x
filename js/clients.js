@@ -58,11 +58,30 @@ async function loadClients() {
     return;
   }
 
-  // Show loading spinner while fetching
+  // Show premium skeleton loading state while fetching (bonus)
   setListZone(`
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading clients...</p>
+    <div class="skeleton-grid">
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
     </div>
   `);
 
