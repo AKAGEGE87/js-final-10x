@@ -1327,6 +1327,22 @@ p { line-height: 1.6; }
   box-shadow: 0 0 0 6px rgba(108,99,255,0.3);
 }
 
+.profile-avatar-custom {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 1rem;
+  box-shadow: 0 0 0 4px rgba(108,99,255,0.2);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: block;
+}
+
+.profile-avatar-custom:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 0 6px rgba(108,99,255,0.3);
+}
+
 .profile-display-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 0.25rem; }
 .profile-display-email { font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
 .profile-display-company { font-size: 0.85rem; color: var(--text-muted); }

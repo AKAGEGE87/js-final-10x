@@ -10,6 +10,7 @@ function initProfile() {
   setupProfileForm();
   setupPasswordForm();
   setupResetData();
+  setupAvatarUpload(); // 📷 photo upload bonus
 }
 
 // -- DISPLAY (P5.1) --
@@ -18,7 +19,6 @@ function loadProfileData() {
   const user = getCurrentUser();
   if (!user) return;
 
-  // Build initials from each word in fullName
   const initials = user.fullName
     .split(' ')
     .map(w => w[0] || '')
@@ -27,29 +27,40 @@ function loadProfileData() {
     .slice(0, 2);
 
   const avatarEl = document.getElementById('profile-avatar');
-  if (avatarEl) {
-    avatarEl.textContent = initials;
+  const customImg = document.getElementById('profile-avatar-custom');
 
-    // Custom gradient generator (bonus)
-    const gradients = [
-      'linear-gradient(135deg, #6c63ff, #a78bfa)',
-      'linear-gradient(135deg, #ec4899, #f43f5e)',
-      'linear-gradient(135deg, #10b981, #059669)',
-      'linear-gradient(135deg, #f59e0b, #d97706)',
-      'linear-gradient(135deg, #3b82f6, #1d4ed8)',
-      'linear-gradient(135deg, #8b5cf6, #6d28d9)'
-    ];
+  if (user.avatar) {
+    if (avatarEl) avatarEl.style.display = 'none';
+    if (customImg) {
+      customImg.src = user.avatar;
+      customImg.style.display = 'block';
+    }
+  } else {
+    if (customImg) customImg.style.display = 'none';
+    if (avatarEl) {
+      avatarEl.style.display = 'flex';
+      avatarEl.textContent = initials;
 
-    // Load saved or use default
-    let activeGrad = localStorage.getItem('crm_avatar_gradient') || 0;
-    avatarEl.style.background = gradients[activeGrad];
+      // Custom gradient generator (bonus)
+      const gradients = [
+        'linear-gradient(135deg, #6c63ff, #a78bfa)',
+        'linear-gradient(135deg, #ec4899, #f43f5e)',
+        'linear-gradient(135deg, #10b981, #059669)',
+        'linear-gradient(135deg, #f59e0b, #d97706)',
+        'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+        'linear-gradient(135deg, #8b5cf6, #6d28d9)'
+      ];
 
-    avatarEl.onclick = () => {
-      activeGrad = (parseInt(activeGrad, 10) + 1) % gradients.length;
-      localStorage.setItem('crm_avatar_gradient', activeGrad);
+      let activeGrad = localStorage.getItem('crm_avatar_gradient') || 0;
       avatarEl.style.background = gradients[activeGrad];
-      showToast('Avatar style changed! 🎨', 'success', 1500);
-    };
+
+      avatarEl.onclick = () => {
+        activeGrad = (parseInt(activeGrad, 10) + 1) % gradients.length;
+        localStorage.setItem('crm_avatar_gradient', activeGrad);
+        avatarEl.style.background = gradients[activeGrad];
+        showToast('Avatar style changed! 🎨', 'success', 1500);
+      };
+    }
   }
 
   setText('profile-name',     user.fullName);
@@ -59,6 +70,34 @@ function loadProfileData() {
 
   setValue('edit-fullName', user.fullName);
   setValue('edit-company',  user.company || '');
+}
+
+/** Handles custom photo upload and saves as Base64 in localStorage crm_users (bonus) */
+function setupAvatarUpload() {
+  const uploadBtn = document.getElementById('upload-photo-btn');
+  const fileInput = document.getElementById('avatar-file-input');
+  if (!uploadBtn || !fileInput) return;
+
+  uploadBtn.onclick = () => fileInput.click();
+
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Limit file size to 2MB to prevent localStorage quota issues
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Image is too large (max 2MB)', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateCurrentUser({ avatar: reader.result });
+      loadProfileData();
+      showToast('Profile photo updated! 📷', 'success');
+    };
+    reader.readAsDataURL(file);
+  };
 }
 
 // -- EDIT PROFILE (P5.2) --
