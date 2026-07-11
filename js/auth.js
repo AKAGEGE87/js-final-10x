@@ -98,7 +98,9 @@ function handleLogin(e) {
     return;
   }
 
-  saveSession({ userId: user.id, email: user.email, loginAt: new Date().toISOString() });
+  // "Remember me" checked → localStorage; unchecked → sessionStorage (tab-only)
+  const remember = document.getElementById('remember-me')?.checked !== false;
+  saveSession({ userId: user.id, email: user.email, loginAt: new Date().toISOString() }, remember);
   window.location.href = 'dashboard.html';
 }
 

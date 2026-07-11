@@ -6,9 +6,13 @@
  *   crm_session — current session object (null when logged out)
  *   crm_clients — array of Client objects (main app state)
  *   crm_theme   — "dark" | "light"
+ *
+ * Session storage note (bonus — Remember me):
+ *   "Remember me" checked  → session in localStorage  (survives tab close)
+ *   "Remember me" unchecked → session in sessionStorage (expires on tab close)
+ *   getSession() checks both storages so guard.js works either way.
  */
 
-// ── Key constants ──────────────────────────────────────────
 const STORAGE_KEYS = {
   USERS:   'crm_users',
   SESSION: 'crm_session',
@@ -16,72 +20,77 @@ const STORAGE_KEYS = {
   THEME:   'crm_theme',
 };
 
-// ── Users ──────────────────────────────────────────────────
+// -- Users --
 
-/** Returns registered users array; [] if empty */
 function getUsers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
 }
 
-/** Persists users array to localStorage */
 function saveUsers(users) {
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 }
 
-// ── Session ────────────────────────────────────────────────
+// -- Session --
 
-/** Returns current session object or null */
+/**
+ * Returns the current session or null.
+ * Checks localStorage first (remember me), then sessionStorage (tab-only).
+ */
 function getSession() {
-  const raw = localStorage.getItem(STORAGE_KEYS.SESSION);
+  const fromLocal   = localStorage.getItem(STORAGE_KEYS.SESSION);
+  const fromSession = sessionStorage.getItem(STORAGE_KEYS.SESSION);
+  const raw = fromLocal || fromSession;
   return raw ? JSON.parse(raw) : null;
 }
 
-/** Persists session object (written on successful login) */
-function saveSession(session) {
-  localStorage.setItem(STORAGE_KEYS.SESSION, JSON.stringify(session));
+/**
+ * Saves the session.
+ * @param {Object} session   — session data to persist
+ * @param {boolean} remember — true = localStorage, false = sessionStorage
+ */
+function saveSession(session, remember = true) {
+  const data = JSON.stringify(session);
+  if (remember) {
+    localStorage.setItem(STORAGE_KEYS.SESSION, data);
+  } else {
+    sessionStorage.setItem(STORAGE_KEYS.SESSION, data);
+  }
 }
 
-/** Deletes session (called on logout) — does NOT touch users or clients */
+/** Removes session from both storages (called on logout) */
 function clearSession() {
   localStorage.removeItem(STORAGE_KEYS.SESSION);
+  sessionStorage.removeItem(STORAGE_KEYS.SESSION);
 }
 
-// ── Clients ────────────────────────────────────────────────
+// -- Clients --
 
-/** Returns stored clients array or null (null = needs API fetch) */
 function getStoredClients() {
   const raw = localStorage.getItem(STORAGE_KEYS.CLIENTS);
   return raw ? JSON.parse(raw) : null;
 }
 
-/** Persists clients array (called after every state change) */
 function saveClients(clients) {
   localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(clients));
 }
 
-/** Deletes clients (called on Profile → Reset CRM Data) */
 function clearClients() {
   localStorage.removeItem(STORAGE_KEYS.CLIENTS);
 }
 
-// ── Theme ──────────────────────────────────────────────────
+// -- Theme --
 
-/** Returns "dark" | "light"; defaults to "dark" */
 function getTheme() {
   return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
 }
 
-/** Persists chosen theme */
 function saveTheme(theme) {
   localStorage.setItem(STORAGE_KEYS.THEME, theme);
 }
 
-// ── Helpers ────────────────────────────────────────────────
+// -- Helpers --
 
-/**
- * Returns the full User object of the currently logged-in user
- * by cross-referencing crm_session.userId with crm_users.
- */
+/** Returns full User object of the currently logged-in user */
 function getCurrentUser() {
   const session = getSession();
   if (!session) return null;
