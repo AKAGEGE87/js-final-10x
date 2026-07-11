@@ -23,7 +23,29 @@ async function initClients() {
   setupToolbar();
   setupAddClientModal();
   setupDetailModal();
+  setupKeyboardShortcuts();
   document.getElementById('export-csv-btn')?.addEventListener('click', exportCSV);
+}
+
+/** Global keyboard shortcuts for the clients page */
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', e => {
+    // Escape — close any open modal
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.modal-open').forEach(m => {
+        m.classList.remove('modal-open');
+        stopCallTimer(); // stop timer if detail modal closes via keyboard
+      });
+    }
+
+    // / or Ctrl+K — focus search input (skip if already in an input)
+    if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) &&
+        document.activeElement.tagName !== 'INPUT' &&
+        document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      document.getElementById('search-input')?.focus();
+    }
+  });
 }
 
 // -- LOAD (P4.2) --
