@@ -509,14 +509,13 @@ p { line-height: 1.6; }
 /* ── Sidebar ── */
 .sidebar {
   width: var(--sidebar-width);
-  min-height: 100vh;
+  height: 100vh;
   background: var(--bg-sidebar);
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
   z-index: 100;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
@@ -667,7 +666,6 @@ p { line-height: 1.6; }
 
 /* ── Main Content ── */
 .main-content {
-  margin-left: var(--sidebar-width);
   flex: 1;
   min-height: 100vh;
   padding: 2rem 2.5rem;
