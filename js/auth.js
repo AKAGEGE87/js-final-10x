@@ -11,6 +11,7 @@ function initSignUp() {
   document.documentElement.setAttribute('data-theme', getTheme());
   document.getElementById('signup-form').addEventListener('submit', handleSignUp);
   initPasswordStrength();
+  initNameCounter(); // live length counter (bonus)
 }
 
 function handleSignUp(e) {
