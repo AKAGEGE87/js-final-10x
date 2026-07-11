@@ -73,12 +73,27 @@ function setActiveNavLink() {
  * redirects to login page. (PRD §P0.2 Logout)
  */
 function setupLogout() {
-  const btn = document.getElementById('logout-btn');
-  if (!btn) return;
+  const avatarBtn = document.getElementById('logout-btn');
+  const dropdown  = document.getElementById('logout-dropdown');
+  const actualBtn = document.getElementById('actual-logout-btn');
+  if (!avatarBtn || !dropdown || !actualBtn) return;
 
-  btn.addEventListener('click', () => {
-    clearSession();                   // only session is removed
+  // Toggle dropdown on avatar click
+  avatarBtn.addEventListener('click', e => {
+    e.stopPropagation(); // prevent window click listener from closing it instantly
+    const show = dropdown.style.display === 'none';
+    dropdown.style.display = show ? 'block' : 'none';
+  });
+
+  // Perform actual logout
+  actualBtn.addEventListener('click', () => {
+    clearSession(); // only session is removed
     window.location.href = 'index.html';
+  });
+
+  // Close dropdown when clicking anywhere else
+  window.addEventListener('click', () => {
+    dropdown.style.display = 'none';
   });
 }
 

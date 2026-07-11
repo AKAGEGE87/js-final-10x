@@ -38,10 +38,15 @@
     <div class="sidebar-footer">
       <div id="session-duration" class="session-duration">Session: 00:00</div>
       <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
-      <button id="logout-btn" class="nav-logout-avatar" title="Log out" aria-label="Log out">
-        <span class="nav-avatar-initials" id="nav-avatar-initials">—</span>
-        <img id="nav-avatar-img" class="nav-avatar-img" src="" alt="Avatar" style="display: none;">
-      </button>
+      <div class="nav-user-menu-wrapper" style="position: relative;">
+        <button id="logout-btn" class="nav-logout-avatar" title="User Menu" aria-label="User Menu">
+          <span class="nav-avatar-initials" id="nav-avatar-initials">—</span>
+          <img id="nav-avatar-img" class="nav-avatar-img" src="" alt="Avatar" style="display: none;">
+        </button>
+        <div id="logout-dropdown" class="logout-dropdown" style="display: none;">
+          <button id="actual-logout-btn" class="btn-dropdown-logout">🚪 Log Out</button>
+        </div>
+      </div>
     </div>
   </aside>
 
