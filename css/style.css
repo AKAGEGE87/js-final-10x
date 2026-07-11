@@ -571,9 +571,18 @@ p { line-height: 1.6; }
   padding: 1rem 1.25rem;
   border-top: 1px solid var(--border);
   display: flex;
+  flex-wrap: wrap; /* allow wrapping for the timer block */
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.5rem 1rem;
+}
+
+.session-duration {
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  font-weight: 500;
+  width: 100%; /* forces it on a line of its own, centered/aligned above the buttons */
+  margin-bottom: 0.1rem;
 }
 
 /* ── Main Content ── */

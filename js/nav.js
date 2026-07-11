@@ -17,6 +17,7 @@ function initNav() {
   setupThemeToggle();
   setupLogout();
   setupEasterEgg(); // 🥚 hidden bonus
+  initSessionTimer(); // Live session timer (bonus)
 }
 
 // ── Theme ──────────────────────────────────────────────────
@@ -123,4 +124,30 @@ function launchConfetti() {
     document.body.appendChild(el);
     el.addEventListener('animationend', () => el.remove());
   }
+}
+
+// ── Session Timer ⏱️ ────────────────────────────────────────
+
+/**
+ * Tracks the elapsed time since session loginAt.
+ * Updates the display every second in the sidebar footer.
+ */
+function initSessionTimer() {
+  const el = document.getElementById('session-duration');
+  if (!el) return;
+
+  const session = getSession();
+  if (!session || !session.loginAt) return;
+
+  const loginTime = new Date(session.loginAt).getTime();
+
+  const update = () => {
+    const diff = Math.floor((Date.now() - loginTime) / 1000);
+    const mins = String(Math.floor(diff / 60)).padStart(2, '0');
+    const secs = String(diff % 60).padStart(2, '0');
+    el.textContent = `Session: ${mins}:${secs}`;
+  };
+
+  update();
+  setInterval(update, 1000);
 }
