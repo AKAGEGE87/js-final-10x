@@ -23,6 +23,7 @@ async function initClients() {
   setupToolbar();
   setupAddClientModal();
   setupDetailModal();
+  document.getElementById('export-csv-btn')?.addEventListener('click', exportCSV);
 }
 
 // -- LOAD (P4.2) --
@@ -572,4 +573,44 @@ function setListZone(html) {
 function setText(id, value) {
   const el = document.getElementById(id);
   if (el) el.textContent = value;
+}
+
+// -- CSV EXPORT (bonus) --
+
+/**
+ * Converts clientsState to a .csv file and triggers a browser download.
+ * Uses the Blob API to create a file in memory without a server.
+ */
+function exportCSV() {
+  if (!clientsState.length) {
+    showToast('No clients to export', 'error');
+    return;
+  }
+
+  // Build CSV rows: header + one row per client
+  const headers = ['Name', 'Email', 'Phone', 'Company', 'Status', 'Deal Value', 'Created At'];
+
+  const rows = clientsState.map(c => [
+    `"${c.name}"`,
+    `"${c.email}"`,
+    `"${c.phone  || ''}"`,
+    `"${c.company || ''}"`,
+    `"${c.status}"`,
+    c.dealValue || 0,
+    new Date(c.createdAt).toLocaleDateString(),
+  ].join(','));
+
+  const csv  = [headers.join(','), ...rows].join('\n');
+
+  // Create a Blob (in-memory file) and a temporary download link
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href     = url;
+  link.download = `10x-crm-clients-${new Date().toISOString().slice(0, 10)}.csv`;
+  link.click();
+
+  // Clean up the temporary object URL from memory
+  URL.revokeObjectURL(url);
+  showToast(`Exported ${clientsState.length} clients ✓`, 'success');
 }
