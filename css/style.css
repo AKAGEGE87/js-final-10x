@@ -9,36 +9,36 @@
 :root {
   --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
 
-  /* Dark theme (default) */
-  --bg-base:        #0d0d1f;
-  --bg-secondary:   #12122a;
-  --bg-card:        rgba(255, 255, 255, 0.04);
-  --bg-card-hover:  rgba(255, 255, 255, 0.07);
-  --bg-input:       rgba(255, 255, 255, 0.06);
-  --bg-sidebar:     rgba(15, 15, 35, 0.95);
+  /* Cyberpunk Ultra-Modern Dark Theme */
+  --bg-base:        #06060f;
+  --bg-secondary:   #0b0b18;
+  --bg-card:        rgba(20, 20, 43, 0.55);
+  --bg-card-hover:  rgba(30, 30, 60, 0.75);
+  --bg-input:       rgba(10, 10, 25, 0.7);
+  --bg-sidebar:     rgba(8, 8, 20, 0.85);
 
-  --border:         rgba(255, 255, 255, 0.08);
-  --border-focus:   rgba(108, 99, 255, 0.6);
-  --border-error:   #ef4444;
+  --border:         rgba(255, 255, 255, 0.05);
+  --border-focus:   #8b5cf6;
+  --border-error:   #f43f5e;
 
-  --text-primary:   #eeeef8;
-  --text-secondary: #8888aa;
-  --text-muted:     #55556a;
-  --text-accent:    #6c63ff;
+  --text-primary:   #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted:     #6b7280;
+  --text-accent:    #a78bfa;
 
-  --accent:         #6c63ff;
-  --accent-hover:   #7c73ff;
-  --accent-light:   rgba(108, 99, 255, 0.15);
-  --accent-glow:    rgba(108, 99, 255, 0.4);
+  --accent:         #6366f1;
+  --accent-hover:   #4f46e5;
+  --accent-light:   rgba(99, 102, 241, 0.15);
+  --accent-glow:    rgba(99, 102, 241, 0.35);
 
   --success:        #10b981;
   --success-light:  rgba(16, 185, 129, 0.15);
-  --error:          #ef4444;
-  --error-light:    rgba(239, 68, 68, 0.12);
-  --warning:        #f59e0b;
-  --warning-light:  rgba(245, 158, 11, 0.15);
-  --info:           #3b82f6;
-  --info-light:     rgba(59, 130, 246, 0.15);
+  --error:          #f43f5e;
+  --error-light:    rgba(244, 63, 94, 0.15);
+  --warning:        #fbbf24;
+  --warning-light:  rgba(251, 191, 36, 0.15);
+  --info:           #06b6d4;
+  --info-light:     rgba(6, 182, 212, 0.15);
 
   /* Status colors */
   --status-lead:       #3b82f6;
@@ -51,16 +51,16 @@
   --status-lost-bg:    rgba(239, 68, 68, 0.15);
 
   --sidebar-width: 250px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --shadow-sm: 0 2px 8px rgba(0,0,0,0.3);
-  --shadow-md: 0 4px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 8px 48px rgba(0,0,0,0.5);
-  --shadow-accent: 0 0 32px var(--accent-glow);
-  --transition: all 0.2s ease;
-  --transition-slow: all 0.35s ease;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --shadow-sm: 0 4px 12px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 32px rgba(0,0,0,0.6);
+  --shadow-lg: 0 16px 64px rgba(0,0,0,0.8);
+  --shadow-accent: 0 0 25px rgba(99, 102, 241, 0.4);
+  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* Light Theme */
@@ -94,7 +94,40 @@ body {
   min-height: 100vh;
   -webkit-font-smoothing: antialiased;
   transition: background 0.3s ease, color 0.3s ease;
+  position: relative;
+  overflow-x: hidden;
 }
+
+/* Ambient Cyber-Glow Background Shapes (bonus) */
+body::before, body::after {
+  content: '';
+  position: fixed;
+  width: 500px;
+  height: 500px;
+  border-radius: 50%;
+  filter: blur(150px);
+  opacity: 0.12;
+  pointer-events: none;
+  z-index: -1;
+  transition: var(--transition-slow);
+}
+
+body::before {
+  background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+  top: -100px;
+  right: -100px;
+}
+
+body::after {
+  background: radial-gradient(circle, var(--info) 0%, transparent 70%);
+  bottom: -150px;
+  left: -150px;
+}
+
+[data-theme="light"] body::before, [data-theme="light"] body::after {
+  opacity: 0.06;
+}
+
 a { color: var(--accent); text-decoration: none; transition: var(--transition); }
 a:hover { color: var(--accent-hover); }
 img { max-width: 100%; }
@@ -102,11 +135,11 @@ button { cursor: pointer; border: none; font-family: var(--font); }
 input, select, textarea { font-family: var(--font); }
 ul { list-style: none; }
 
-/* ── Scrollbar ── */
-::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
-::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+/* ── Custom Cyber-Scrollbar ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: var(--bg-base); }
+::-webkit-scrollbar-thumb { background: rgba(99, 102, 241, 0.25); border-radius: 100px; border: 2px solid var(--bg-base); }
+::-webkit-scrollbar-thumb:hover { background: rgba(99, 102, 241, 0.5); }
 
 /* ── Typography ── */
 h1 { font-size: 1.75rem; font-weight: 700; line-height: 1.2; }
@@ -713,27 +746,36 @@ p { line-height: 1.6; }
 
 .stat-card {
   background: var(--bg-card);
-  backdrop-filter: blur(12px);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 1.4rem 1.5rem;
-  transition: var(--transition);
+  padding: 1.5rem;
+  transition: var(--transition-slow);
   position: relative;
   overflow: hidden;
+  box-shadow: var(--shadow-sm);
 }
 
 .stat-card::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent), transparent);
-  opacity: 0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--accent), var(--info), transparent);
+  opacity: 0.6;
   transition: var(--transition);
 }
 
-.stat-card:hover { border-color: rgba(108, 99, 255, 0.25); transform: translateY(-2px); }
-.stat-card:hover::before { opacity: 1; }
+.stat-card:hover {
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15), var(--shadow-md);
+}
+
+.stat-card:hover::before {
+  opacity: 1;
+}
 
 .stat-label {
   font-size: 0.8rem;
@@ -1048,17 +1090,20 @@ p { line-height: 1.6; }
 
 .client-card {
   background: var(--bg-card);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
   overflow: hidden;
-  transition: var(--transition);
+  transition: var(--transition-slow);
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
 }
 
 .client-card:hover {
-  border-color: rgba(108, 99, 255, 0.3);
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-md);
+  border-color: rgba(99, 102, 241, 0.4);
+  transform: translateY(-4px) scale(1.01);
+  box-shadow: 0 10px 30px rgba(99, 102, 241, 0.12), var(--shadow-md);
 }
 
 .client-card-header {
