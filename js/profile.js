@@ -196,3 +196,9 @@ function setValue(id, value) {
   const el = document.getElementById(id);
   if (el) el.value = value;
 }
+
+/** Toggle password field between text and password type (bonus) */
+function togglePwd(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field) field.type = field.type === 'password' ? 'text' : 'password';
+}
