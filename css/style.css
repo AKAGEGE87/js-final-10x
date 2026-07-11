@@ -1169,6 +1169,17 @@ p { line-height: 1.6; }
   font-weight: 500;
 }
 
+#detail-email, #detail-phone {
+  cursor: pointer;
+  display: inline-block;
+  transition: var(--transition);
+}
+
+#detail-email:hover, #detail-phone:hover {
+  color: var(--accent);
+  text-decoration: underline;
+}
+
 .notes-section { padding: 1.25rem 1.5rem; }
 
 .notes-section h3 { font-size: 0.95rem; margin-bottom: 0.9rem; }
@@ -1472,4 +1483,15 @@ p { line-height: 1.6; }
   .main-content { padding: 1.5rem; }
   .form-row { grid-template-columns: 1fr; }
   .detail-fields { grid-template-columns: 1fr; }
+}
+
+@keyframes confettiFall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(105vh) rotate(720deg);
+    opacity: 0;
+  }
 }

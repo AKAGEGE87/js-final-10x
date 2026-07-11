@@ -475,6 +475,22 @@ function openClientDetail(id) {
   document.getElementById('remind-btn').onclick   = () => setReminder(id, client.name);
   setupCallTimer(id); // wire up call timer for this client
 
+  // Clipboard copy helpers (bonus)
+  const emailEl = document.getElementById('detail-email');
+  if (emailEl) {
+    emailEl.onclick = () => {
+      navigator.clipboard.writeText(client.email);
+      showToast('Email copied to clipboard! 📋', 'success', 2000);
+    };
+  }
+  const phoneEl = document.getElementById('detail-phone');
+  if (phoneEl && client.phone) {
+    phoneEl.onclick = () => {
+      navigator.clipboard.writeText(client.phone);
+      showToast('Phone copied to clipboard! 📋', 'success', 2000);
+    };
+  }
+
   modal.classList.add('modal-open');
 }
 

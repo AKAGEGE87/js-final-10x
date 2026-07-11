@@ -17,7 +17,7 @@
   <!-- ── Sidebar ─────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="dashboard.html" aria-label="Go to dashboard">
+      <a href="dashboard.html" aria-label="Go to dashboard" id="nav-logo">
         <span class="logo-icon">⚡</span>
         <span class="logo-text">10X CRM</span>
       </a>
@@ -65,24 +65,28 @@
         <span class="stat-icon">👥</span>
         <p class="stat-label">Total Clients</p>
         <p class="stat-value" id="stat-total">—</p>
+        <p class="stat-trend trend-up">↗ 12% vs last month</p>
       </div>
 
       <div class="stat-card accent">
         <span class="stat-icon">⚡</span>
         <p class="stat-label">Active Deals</p>
         <p class="stat-value" id="stat-active">—</p>
+        <p class="stat-trend trend-up">↗ 8% active</p>
       </div>
 
       <div class="stat-card success">
         <span class="stat-icon">💰</span>
         <p class="stat-label">Won Revenue</p>
         <p class="stat-value" id="stat-revenue">—</p>
+        <p class="stat-trend trend-up">↗ $2,400 new</p>
       </div>
 
       <div class="stat-card">
         <span class="stat-icon">🆕</span>
         <p class="stat-label">New This Week</p>
         <p class="stat-value" id="stat-new">—</p>
+        <p class="stat-trend trend-neutral">→ Stable activity</p>
       </div>
 
     </div>
@@ -149,3 +153,4 @@
 <script>initDashboard();</script>
 </body>
 </html>
+
