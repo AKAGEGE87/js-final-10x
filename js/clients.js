@@ -116,10 +116,24 @@ function renderClients(list) {
 
   if (list.length === 0) {
     container.innerHTML = '<div class="empty-state"><p>No clients found.</p></div>';
-    return;
+  } else {
+    container.innerHTML = list.map(buildClientCard).join('');
   }
 
-  container.innerHTML = list.map(buildClientCard).join('');
+  updateChipCounts(); // keep chip labels in sync after every render
+}
+
+/** Updates each filter chip to show how many clients match that status */
+function updateChipCounts() {
+  const totals = { All: clientsState.length };
+  ['Lead', 'Contacted', 'Won', 'Lost'].forEach(s => {
+    totals[s] = clientsState.filter(c => c.status === s).length;
+  });
+
+  Object.entries(totals).forEach(([status, count]) => {
+    const chip = document.getElementById(`chip-${status}`);
+    if (chip) chip.textContent = count > 0 ? `${status} (${count})` : status;
+  });
 }
 
 function buildClientCard(c) {
@@ -191,14 +205,29 @@ let searchDebounceTimer = null; // holds the pending setTimeout id
 
 function setupToolbar() {
   const searchInput = document.getElementById('search-input');
+  const clearBtn    = document.getElementById('search-clear');
+
   if (searchInput) {
     searchInput.addEventListener('input', e => {
-      // Debounce: cancel any pending render, wait 300ms after last keystroke
+      // Show/hide clear button
+      if (clearBtn) clearBtn.style.display = e.target.value ? 'flex' : 'none';
+
+      // Debounce: wait 300ms after last keystroke before re-rendering
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
         searchQuery = e.target.value;
         renderClients(getVisibleClients());
       }, 300);
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      searchInput.value  = '';
+      clearBtn.style.display = 'none';
+      searchQuery = '';
+      renderClients(getVisibleClients());
+      searchInput.focus();
     });
   }
 

@@ -73,15 +73,16 @@
           placeholder="Search by name or company..."
           aria-label="Search clients"
         >
+        <button id="search-clear" class="search-clear" aria-label="Clear search" style="display:none">✕</button>
       </div>
 
       <!-- Filter chips: All / Lead / Contacted / Won / Lost -->
       <div class="filter-chips" role="group" aria-label="Filter by status">
-        <button class="filter-chip active" data-status="All">All</button>
-        <button class="filter-chip" data-status="Lead">Lead</button>
-        <button class="filter-chip" data-status="Contacted">Contacted</button>
-        <button class="filter-chip" data-status="Won">Won</button>
-        <button class="filter-chip" data-status="Lost">Lost</button>
+        <button class="filter-chip active" data-status="All"  id="chip-All">All</button>
+        <button class="filter-chip" data-status="Lead"        id="chip-Lead">Lead</button>
+        <button class="filter-chip" data-status="Contacted"   id="chip-Contacted">Contacted</button>
+        <button class="filter-chip" data-status="Won"         id="chip-Won">Won</button>
+        <button class="filter-chip" data-status="Lost"        id="chip-Lost">Lost</button>
       </div>
 
       <!-- Sort select: 3 options per PRD -->
