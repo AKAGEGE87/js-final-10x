@@ -78,11 +78,10 @@
 
   <div id="toast-container"></div>
 
-  <script src="js/storage.js"></script>
-  <script src="js/guard.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/auth.js"></script>
-  <script>
+  <script type="module">
+    import { initLogin, togglePassword } from './js/auth.js';
+    window.togglePassword = togglePassword;
+
     // Seed demo account if it doesn't exist yet (for evaluator convenience)
     (function seedDemoAccount() {
       const users = JSON.parse(localStorage.getItem('crm_users') || '[]');

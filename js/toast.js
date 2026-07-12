@@ -16,7 +16,7 @@
  * @param {string} type      - 'success' | 'error' | 'info' | 'warning'
  * @param {number} duration  - Auto-close delay in ms (default 3000)
  */
-function showToast(message, type = 'success', duration = 3000) {
+export function showToast(message, type = 'success', duration = 3000) {
   // Ensure container exists
   let container = document.getElementById('toast-container');
   if (!container) {

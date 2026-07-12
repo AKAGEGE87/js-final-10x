@@ -1,15 +1,20 @@
 /**
  * profile.js — Profile page for 10X CRM
  * Handles: display user info, edit profile, change password, reset CRM data.
- */
+ */import { requireAuth } from './guard.js';
+import { initNav, renderNavAvatar } from './nav.js';
+import { getCurrentUser, getUsers, getSession, saveUsers, clearClients, saveClients } from './storage.js';
+import { showToast } from './toast.js';
+import { showError, clearErrors, setText } from './utils.js';
 
-function initProfile() {
+export function initProfile() {
   if (!requireAuth()) return;
   initNav();
   loadProfileData();
   setupProfileForm();
   setupPasswordForm();
   setupResetData();
+  setupAvatarUpload(); // 📷 photo upload bonus
 }
 
 // -- DISPLAY (P5.1) --
@@ -18,7 +23,6 @@ function loadProfileData() {
   const user = getCurrentUser();
   if (!user) return;
 
-  // Build initials from each word in fullName
   const initials = user.fullName
     .split(' ')
     .map(w => w[0] || '')
@@ -26,7 +30,47 @@ function loadProfileData() {
     .toUpperCase()
     .slice(0, 2);
 
-  setText('profile-avatar',   initials);
+  const avatarEl = document.getElementById('profile-avatar');
+  const customImg = document.getElementById('profile-avatar-custom');
+  const deleteBtn = document.getElementById('delete-photo-btn');
+
+  if (user.avatar) {
+    if (avatarEl) avatarEl.style.display = 'none';
+    if (customImg) {
+      customImg.src = user.avatar;
+      customImg.style.display = 'block';
+    }
+    if (deleteBtn) deleteBtn.style.display = 'block';
+  } else {
+    if (customImg) customImg.style.display = 'none';
+    if (deleteBtn) deleteBtn.style.display = 'none';
+    if (avatarEl) {
+      avatarEl.style.display = 'flex';
+      avatarEl.textContent = initials;
+
+      // Custom gradient generator (bonus)
+      const gradients = [
+        'linear-gradient(135deg, #6c63ff, #a78bfa)',
+        'linear-gradient(135deg, #ec4899, #f43f5e)',
+        'linear-gradient(135deg, #10b981, #059669)',
+        'linear-gradient(135deg, #f59e0b, #d97706)',
+        'linear-gradient(135deg, #3b82f6, #1d4ed8)',
+        'linear-gradient(135deg, #8b5cf6, #6d28d9)'
+      ];
+
+      let activeGrad = localStorage.getItem('crm_avatar_gradient') || 0;
+      avatarEl.style.background = gradients[activeGrad];
+
+      avatarEl.onclick = () => {
+        activeGrad = (parseInt(activeGrad, 10) + 1) % gradients.length;
+        localStorage.setItem('crm_avatar_gradient', activeGrad);
+        avatarEl.style.background = gradients[activeGrad];
+        if (typeof renderNavAvatar === 'function') renderNavAvatar(); // sync sidebar initials
+        showToast('Avatar style changed! 🎨', 'success', 1500);
+      };
+    }
+  }
+
   setText('profile-name',     user.fullName);
   setText('profile-email',    user.email);
   setText('profile-company',  user.company || '—');
@@ -34,6 +78,46 @@ function loadProfileData() {
 
   setValue('edit-fullName', user.fullName);
   setValue('edit-company',  user.company || '');
+}
+
+/** Handles custom photo upload and saves as Base64 in localStorage crm_users (bonus) */
+function setupAvatarUpload() {
+  const uploadBtn = document.getElementById('upload-photo-btn');
+  const deleteBtn = document.getElementById('delete-photo-btn');
+  const fileInput = document.getElementById('avatar-file-input');
+  if (!uploadBtn || !fileInput) return;
+
+  uploadBtn.onclick = () => fileInput.click();
+
+  fileInput.onchange = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    // Limit file size to 2MB to prevent localStorage quota issues
+    if (file.size > 2 * 1024 * 1024) {
+      showToast('Image is too large (max 2MB)', 'error');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateCurrentUser({ avatar: reader.result });
+      loadProfileData();
+      if (typeof renderNavAvatar === 'function') renderNavAvatar(); // sync sidebar photo
+      showToast('Profile photo updated! 📷', 'success');
+    };
+    reader.readAsDataURL(file);
+  };
+
+  if (deleteBtn) {
+    deleteBtn.onclick = () => {
+      updateCurrentUser({ avatar: null });
+      fileInput.value = ''; // reset file input
+      loadProfileData();
+      if (typeof renderNavAvatar === 'function') renderNavAvatar(); // sync sidebar photo
+      showToast('Profile photo removed ✓', 'success');
+    };
+  }
 }
 
 // -- EDIT PROFILE (P5.2) --
@@ -56,6 +140,7 @@ function setupProfileForm() {
 
     updateCurrentUser({ fullName, company });
     loadProfileData();
+    if (typeof renderNavAvatar === 'function') renderNavAvatar(); // sync sidebar initials
     showToast('Profile updated ✓', 'success');
   });
 }
@@ -109,6 +194,10 @@ function setupResetData() {
   if (!btn) return;
 
   btn.addEventListener('click', async () => {
+    // Visual shake feedback (bonus)
+    btn.classList.add('shake-anim');
+    btn.addEventListener('animationend', () => btn.classList.remove('shake-anim'), { once: true });
+
     if (!confirm('This will reset all client data to the original 30 records. Your account will not be affected. Continue?')) return;
 
     clearClients();
@@ -156,39 +245,15 @@ function updateCurrentUser(fields) {
   saveUsers(users);
 }
 
-/** Shows a red error message under a form field */
-function showError(fieldId, message, scope) {
-  const field = (scope || document).querySelector('#' + fieldId) || document.getElementById(fieldId);
-  if (!field) return;
 
-  field.classList.add('input-error');
-
-  let err = field.parentElement.querySelector('.field-error');
-  if (!err) {
-    err = document.createElement('span');
-    err.className = 'field-error';
-    field.parentElement.appendChild(err);
-  }
-  err.textContent = message;
-
-  field.addEventListener('input', () => {
-    field.classList.remove('input-error');
-    field.parentElement.querySelector('.field-error')?.remove();
-  }, { once: true });
-}
-
-function clearErrors(scope) {
-  const root = scope || document;
-  root.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  root.querySelectorAll('.field-error').forEach(el => el.remove());
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}
 
 function setValue(id, value) {
   const el = document.getElementById(id);
   if (el) el.value = value;
+}
+
+/** Toggle password field between text and password type (bonus) */
+function togglePwd(fieldId) {
+  const field = document.getElementById(fieldId);
+  if (field) field.type = field.type === 'password' ? 'text' : 'password';
 }

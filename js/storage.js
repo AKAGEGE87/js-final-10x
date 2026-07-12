@@ -22,11 +22,11 @@ const STORAGE_KEYS = {
 
 // -- Users --
 
-function getUsers() {
+export function getUsers() {
   return JSON.parse(localStorage.getItem(STORAGE_KEYS.USERS) || '[]');
 }
 
-function saveUsers(users) {
+export function saveUsers(users) {
   localStorage.setItem(STORAGE_KEYS.USERS, JSON.stringify(users));
 }
 
@@ -36,7 +36,7 @@ function saveUsers(users) {
  * Returns the current session or null.
  * Checks localStorage first (remember me), then sessionStorage (tab-only).
  */
-function getSession() {
+export function getSession() {
   const fromLocal   = localStorage.getItem(STORAGE_KEYS.SESSION);
   const fromSession = sessionStorage.getItem(STORAGE_KEYS.SESSION);
   const raw = fromLocal || fromSession;
@@ -48,7 +48,7 @@ function getSession() {
  * @param {Object} session   — session data to persist
  * @param {boolean} remember — true = localStorage, false = sessionStorage
  */
-function saveSession(session, remember = true) {
+export function saveSession(session, remember = true) {
   const data = JSON.stringify(session);
   if (remember) {
     localStorage.setItem(STORAGE_KEYS.SESSION, data);
@@ -58,41 +58,42 @@ function saveSession(session, remember = true) {
 }
 
 /** Removes session from both storages (called on logout) */
-function clearSession() {
+export function clearSession() {
   localStorage.removeItem(STORAGE_KEYS.SESSION);
   sessionStorage.removeItem(STORAGE_KEYS.SESSION);
 }
 
 // -- Clients --
 
-function getStoredClients() {
+export function getStoredClients() {
   const raw = localStorage.getItem(STORAGE_KEYS.CLIENTS);
   return raw ? JSON.parse(raw) : null;
 }
 
-function saveClients(clients) {
+export function saveClients(clients) {
   localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(clients));
 }
 
-function clearClients() {
+export function clearClients() {
   localStorage.removeItem(STORAGE_KEYS.CLIENTS);
 }
 
 // -- Theme --
 
-function getTheme() {
+export function getTheme() {
   return localStorage.getItem(STORAGE_KEYS.THEME) || 'dark';
 }
 
-function saveTheme(theme) {
+export function saveTheme(theme) {
   localStorage.setItem(STORAGE_KEYS.THEME, theme);
 }
 
 // -- Helpers --
 
 /** Returns full User object of the currently logged-in user */
-function getCurrentUser() {
+export function getCurrentUser() {
   const session = getSession();
   if (!session) return null;
   return getUsers().find(u => u.id === session.userId) || null;
 }
+

@@ -17,7 +17,7 @@
   <!-- ── Sidebar ─────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="dashboard.html" aria-label="Go to dashboard">
+      <a href="dashboard.html" aria-label="Go to dashboard" id="nav-logo">
         <span class="logo-icon">⚡</span>
         <span class="logo-text">10X CRM</span>
       </a>
@@ -36,8 +36,17 @@
     </nav>
 
     <div class="sidebar-footer">
+      <div id="session-duration" class="session-duration">Session: 00:00</div>
       <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
-      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+      <div class="nav-user-menu-wrapper" style="position: relative;">
+        <button id="logout-btn" class="nav-logout-avatar" title="User Menu" aria-label="User Menu">
+          <span class="nav-avatar-initials" id="nav-avatar-initials">—</span>
+          <img id="nav-avatar-img" class="nav-avatar-img" src="" alt="Avatar" style="display: none;">
+        </button>
+        <div id="logout-dropdown" class="logout-dropdown" style="display: none;">
+          <button id="actual-logout-btn" class="btn-dropdown-logout">🚪 Log Out</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -57,8 +66,16 @@
       <!-- P5.1 — User info card (left column) -->
       <aside>
         <div class="profile-card">
-          <!-- Initials avatar (string methods: split + map + join) -->
-          <div class="profile-avatar-initials" id="profile-avatar">NB</div>
+          <!-- Initials avatar or Custom image container (bonus) -->
+          <div class="profile-avatar-wrapper" style="position:relative; display:inline-block; margin: 0 auto 1rem;">
+            <div class="profile-avatar-initials" id="profile-avatar">NB</div>
+            <img id="profile-avatar-custom" class="profile-avatar-custom" style="display:none;" alt="User Avatar">
+          </div>
+          <div style="margin-bottom: 1rem; display: flex; flex-direction: column; gap: 0.5rem; align-items: center;">
+            <input type="file" id="avatar-file-input" accept="image/*" style="display:none;">
+            <button type="button" id="upload-photo-btn" class="btn btn-secondary btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem;">📷 Upload Photo</button>
+            <button type="button" id="delete-photo-btn" class="btn btn-danger btn-sm" style="font-size: 0.8rem; padding: 0.35rem 0.75rem; display: none;">🗑️ Remove Photo</button>
+          </div>
 
           <h2 class="profile-display-name"  id="profile-name">—</h2>
           <p class="profile-display-email"   id="profile-email">—</p>
@@ -139,18 +156,17 @@
 
 <div id="toast-container"></div>
 
-<script src="js/storage.js"></script>
-<script src="js/guard.js"></script>
-<script src="js/toast.js"></script>
-<script src="js/nav.js"></script>
-<script src="js/profile.js"></script>
-<script>
-  initProfile();
-  // Local helper for password toggle on this page
-  function togglePwd(id) {
-    const f = document.getElementById(id);
-    if (f) f.type = f.type === 'password' ? 'text' : 'password';
-  }
-</script>
+  <script type="module">
+    import { initProfile } from './js/profile.js';
+    initProfile();
+  </script>
+  <script>
+    // Local helper for password toggle on this page
+    function togglePwd(id) {
+      const f = document.getElementById(id);
+      if (f) f.type = f.type === 'password' ? 'text' : 'password';
+    }
+  </script>
 </body>
 </html>
+

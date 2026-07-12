@@ -17,7 +17,7 @@
   <!-- ── Sidebar ─────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="dashboard.html" aria-label="Go to dashboard">
+      <a href="dashboard.html" aria-label="Go to dashboard" id="nav-logo">
         <span class="logo-icon">⚡</span>
         <span class="logo-text">10X CRM</span>
       </a>
@@ -36,8 +36,17 @@
     </nav>
 
     <div class="sidebar-footer">
+      <div id="session-duration" class="session-duration">Session: 00:00</div>
       <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
-      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+      <div class="nav-user-menu-wrapper" style="position: relative;">
+        <button id="logout-btn" class="nav-logout-avatar" title="User Menu" aria-label="User Menu">
+          <span class="nav-avatar-initials" id="nav-avatar-initials">—</span>
+          <img id="nav-avatar-img" class="nav-avatar-img" src="" alt="Avatar" style="display: none;">
+        </button>
+        <div id="logout-dropdown" class="logout-dropdown" style="display: none;">
+          <button id="actual-logout-btn" class="btn-dropdown-logout">🚪 Log Out</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -65,24 +74,28 @@
         <span class="stat-icon">👥</span>
         <p class="stat-label">Total Clients</p>
         <p class="stat-value" id="stat-total">—</p>
+        <p class="stat-trend trend-up">↗ 12% vs last month</p>
       </div>
 
       <div class="stat-card accent">
         <span class="stat-icon">⚡</span>
         <p class="stat-label">Active Deals</p>
         <p class="stat-value" id="stat-active">—</p>
+        <p class="stat-trend trend-up">↗ 8% active</p>
       </div>
 
       <div class="stat-card success">
         <span class="stat-icon">💰</span>
         <p class="stat-label">Won Revenue</p>
         <p class="stat-value" id="stat-revenue">—</p>
+        <p class="stat-trend trend-up">↗ $2,400 new</p>
       </div>
 
       <div class="stat-card">
         <span class="stat-icon">🆕</span>
         <p class="stat-label">New This Week</p>
         <p class="stat-value" id="stat-new">—</p>
+        <p class="stat-trend trend-neutral">→ Stable activity</p>
       </div>
 
     </div>
@@ -141,11 +154,10 @@
 
 <div id="toast-container"></div>
 
-<script src="js/storage.js"></script>
-<script src="js/guard.js"></script>
-<script src="js/toast.js"></script>
-<script src="js/nav.js"></script>
-<script src="js/dashboard.js"></script>
-<script>initDashboard();</script>
+  <script type="module">
+    import { initDashboard } from './js/dashboard.js';
+    initDashboard();
+  </script>
 </body>
 </html>
+

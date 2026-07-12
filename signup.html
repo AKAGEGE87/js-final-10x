@@ -34,13 +34,17 @@
 
         <!-- Full Name -->
         <div class="form-group">
-          <label class="form-label" for="fullName">Full Name</label>
+          <div style="display:flex; justify-content:space-between; align-items:center">
+            <label class="form-label" for="fullName">Full Name</label>
+            <span id="name-counter" class="field-counter">0 / 50</span>
+          </div>
           <input
             type="text"
             id="fullName"
             class="form-input"
             placeholder="Nino Beridze"
             autocomplete="name"
+            maxlength="50"
           >
         </div>
 
@@ -116,10 +120,10 @@
 
   <div id="toast-container"></div>
 
-  <script src="js/storage.js"></script>
-  <script src="js/guard.js"></script>
-  <script src="js/toast.js"></script>
-  <script src="js/auth.js"></script>
-  <script>initSignUp();</script>
+  <script type="module">
+    import { initSignUp, togglePassword } from './js/auth.js';
+    window.togglePassword = togglePassword;
+    initSignUp();
+  </script>
 </body>
 </html>

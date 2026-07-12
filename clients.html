@@ -17,7 +17,7 @@
   <!-- ── Sidebar ─────────────────────────────────────── -->
   <aside class="sidebar">
     <div class="sidebar-logo">
-      <a href="dashboard.html" aria-label="Go to dashboard">
+      <a href="dashboard.html" aria-label="Go to dashboard" id="nav-logo">
         <span class="logo-icon">⚡</span>
         <span class="logo-text">10X CRM</span>
       </a>
@@ -36,8 +36,17 @@
     </nav>
 
     <div class="sidebar-footer">
+      <div id="session-duration" class="session-duration">Session: 00:00</div>
       <button id="theme-toggle" class="btn-icon" aria-label="Toggle theme">☀️</button>
-      <button id="logout-btn" class="btn btn-ghost" aria-label="Log out">Logout</button>
+      <div class="nav-user-menu-wrapper" style="position: relative;">
+        <button id="logout-btn" class="nav-logout-avatar" title="User Menu" aria-label="User Menu">
+          <span class="nav-avatar-initials" id="nav-avatar-initials">—</span>
+          <img id="nav-avatar-img" class="nav-avatar-img" src="" alt="Avatar" style="display: none;">
+        </button>
+        <div id="logout-dropdown" class="logout-dropdown" style="display: none;">
+          <button id="actual-logout-btn" class="btn-dropdown-logout">🚪 Log Out</button>
+        </div>
+      </div>
     </div>
   </aside>
 
@@ -73,15 +82,16 @@
           placeholder="Search by name or company..."
           aria-label="Search clients"
         >
+        <button id="search-clear" class="search-clear" aria-label="Clear search" style="display:none">✕</button>
       </div>
 
       <!-- Filter chips: All / Lead / Contacted / Won / Lost -->
       <div class="filter-chips" role="group" aria-label="Filter by status">
-        <button class="filter-chip active" data-status="All">All</button>
-        <button class="filter-chip" data-status="Lead">Lead</button>
-        <button class="filter-chip" data-status="Contacted">Contacted</button>
-        <button class="filter-chip" data-status="Won">Won</button>
-        <button class="filter-chip" data-status="Lost">Lost</button>
+        <button class="filter-chip active" data-status="All"  id="chip-All">All</button>
+        <button class="filter-chip" data-status="Lead"        id="chip-Lead">Lead</button>
+        <button class="filter-chip" data-status="Contacted"   id="chip-Contacted">Contacted</button>
+        <button class="filter-chip" data-status="Won"         id="chip-Won">Won</button>
+        <button class="filter-chip" data-status="Lost"        id="chip-Lost">Lost</button>
       </div>
 
       <!-- Sort select: 3 options per PRD -->
@@ -252,11 +262,15 @@
 
 <div id="toast-container"></div>
 
-<script src="js/storage.js"></script>
-<script src="js/guard.js"></script>
-<script src="js/toast.js"></script>
-<script src="js/nav.js"></script>
-<script src="js/clients.js"></script>
-<script>initClients();</script>
+  <script type="module">
+    import { initClients, closeAddModal, openEditModal, deleteClient, changeStatus, openClientDetail } from './js/clients.js';
+    window.closeAddModal = closeAddModal;
+    window.openEditModal = openEditModal;
+    window.deleteClient = deleteClient;
+    window.changeStatus = changeStatus;
+    window.openClientDetail = openClientDetail;
+    initClients();
+  </script>
 </body>
 </html>
+

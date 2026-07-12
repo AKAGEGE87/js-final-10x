@@ -10,10 +10,15 @@
  *   P3.5 — Data loaded from crm_clients (or fetched from API once)
  */
 
+import { requireAuth } from './guard.js';
+import { initNav } from './nav.js';
+import { getCurrentUser, getStoredClients, saveClients } from './storage.js';
+import { setText } from './utils.js';
+
 let dashboardClients = []; // local state
 
 /** Entry point — called on page load */
-async function initDashboard() {
+export async function initDashboard() {
   if (!requireAuth()) return;   // guard: redirect if no session
   initNav();                    // sidebar, theme, logout
   renderWelcome();
@@ -176,8 +181,3 @@ function renderRecentClients() {
 }
 
 // ── Utility ───────────────────────────────────────────────
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
-}

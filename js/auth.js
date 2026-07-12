@@ -4,13 +4,19 @@
  * All validations run at once on submit.
  */
 
+import { getUsers, saveUsers, getTheme, saveSession } from './storage.js';
+import { requireGuest } from './guard.js';
+import { showToast } from './toast.js';
+import { isValidEmail, showError, clearErrors } from './utils.js';
+
 // -- SIGN UP --
 
-function initSignUp() {
+export function initSignUp() {
   requireGuest();
   document.documentElement.setAttribute('data-theme', getTheme());
   document.getElementById('signup-form').addEventListener('submit', handleSignUp);
   initPasswordStrength();
+  initNameCounter(); // live length counter (bonus)
 }
 
 function handleSignUp(e) {
@@ -71,7 +77,7 @@ function handleSignUp(e) {
 
 // -- LOGIN --
 
-function initLogin() {
+export function initLogin() {
   requireGuest();
   document.documentElement.setAttribute('data-theme', getTheme());
   document.getElementById('login-form').addEventListener('submit', handleLogin);
@@ -104,47 +110,6 @@ function handleLogin(e) {
   window.location.href = 'dashboard.html';
 }
 
-// -- HELPERS --
-
-/**
- * Marks a field red and shows an error message below it.
- * Passing an empty message adds only the red border.
- * The error clears automatically on the next keystroke.
- */
-function showError(fieldId, message) {
-  const field = document.getElementById(fieldId);
-  if (!field) return;
-
-  field.classList.add('input-error');
-
-  if (message) {
-    let err = field.parentElement.querySelector('.field-error');
-    if (!err) {
-      err = document.createElement('span');
-      err.className = 'field-error';
-      field.parentElement.appendChild(err);
-    }
-    err.textContent = message;
-  }
-
-  // Clear error as soon as user starts typing
-  field.addEventListener('input', () => {
-    field.classList.remove('input-error');
-    field.parentElement.querySelector('.field-error')?.remove();
-  }, { once: true });
-}
-
-function clearErrors() {
-  document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  document.querySelectorAll('.field-error').forEach(el => el.remove());
-}
-
-/** Returns true if the email string has @ and a dot after @ */
-function isValidEmail(email) {
-  const at = email.indexOf('@');
-  return at !== -1 && email.slice(at + 1).includes('.');
-}
-
 // -- PASSWORD STRENGTH (bonus) --
 
 function initPasswordStrength() {
@@ -172,7 +137,24 @@ function initPasswordStrength() {
 }
 
 /** Toggle password field between text and password type */
-function togglePassword(fieldId) {
+export function togglePassword(fieldId) {
   const field = document.getElementById(fieldId);
   if (field) field.type = field.type === 'password' ? 'text' : 'password';
+}
+
+function initNameCounter() {
+  const input   = document.getElementById('fullName');
+  const counter = document.getElementById('name-counter');
+  if (!input || !counter) return;
+
+  input.addEventListener('input', () => {
+    const len = input.value.length;
+    counter.textContent = `${len} / 50`;
+    // Warn style if getting close to limit
+    if (len >= 45) {
+      counter.style.color = 'var(--danger)';
+    } else {
+      counter.style.color = 'var(--text-muted)';
+    }
+  });
 }

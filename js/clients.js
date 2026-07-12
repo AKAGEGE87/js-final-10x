@@ -4,6 +4,12 @@
  * Golden Cycle: state changes → saveClients() → renderClients()
  */
 
+import { requireAuth } from './guard.js';
+import { initNav } from './nav.js';
+import { getStoredClients, saveClients, clearClients } from './storage.js';
+import { showToast } from './toast.js';
+import { isValidEmail, showError, clearErrors, setText } from './utils.js';
+
 // -- State --
 let clientsState   = [];      // source of truth (loaded from localStorage or API)
 let activeFilter   = 'All';   // active status chip
@@ -16,14 +22,36 @@ const STATUS_CLASS = { Lead: 'lead', Contacted: 'contacted', Won: 'won', Lost: '
 
 // -- INIT --
 
-async function initClients() {
+export async function initClients() {
   if (!requireAuth()) return;
   initNav();
   await loadClients();
   setupToolbar();
   setupAddClientModal();
   setupDetailModal();
+  setupKeyboardShortcuts();
   document.getElementById('export-csv-btn')?.addEventListener('click', exportCSV);
+}
+
+/** Global keyboard shortcuts for the clients page */
+function setupKeyboardShortcuts() {
+  document.addEventListener('keydown', e => {
+    // Escape — close any open modal
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.modal-open').forEach(m => {
+        m.classList.remove('modal-open');
+        stopCallTimer(); // stop timer if detail modal closes via keyboard
+      });
+    }
+
+    // / or Ctrl+K — focus search input (skip if already in an input)
+    if ((e.key === '/' || (e.ctrlKey && e.key === 'k')) &&
+        document.activeElement.tagName !== 'INPUT' &&
+        document.activeElement.tagName !== 'TEXTAREA') {
+      e.preventDefault();
+      document.getElementById('search-input')?.focus();
+    }
+  });
 }
 
 // -- LOAD (P4.2) --
@@ -36,11 +64,30 @@ async function loadClients() {
     return;
   }
 
-  // Show loading spinner while fetching
+  // Show premium skeleton loading state while fetching (bonus)
   setListZone(`
-    <div class="loading-state">
-      <div class="spinner"></div>
-      <p>Loading clients...</p>
+    <div class="skeleton-grid">
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
+      <div class="skeleton-card">
+        <div class="skeleton-avatar pulse-anim"></div>
+        <div class="skeleton-info">
+          <div class="skeleton-line short pulse-anim"></div>
+          <div class="skeleton-line long pulse-anim"></div>
+        </div>
+      </div>
     </div>
   `);
 
@@ -116,10 +163,31 @@ function renderClients(list) {
 
   if (list.length === 0) {
     container.innerHTML = '<div class="empty-state"><p>No clients found.</p></div>';
-    return;
+  } else {
+    container.innerHTML = list.map(buildClientCard).join('');
   }
 
-  container.innerHTML = list.map(buildClientCard).join('');
+  updateChipCounts(); // keep chip labels in sync after every render
+}
+
+/** Updates each filter chip to show how many clients match that status */
+function updateChipCounts() {
+  const totals = { All: clientsState.length };
+  ['Lead', 'Contacted', 'Won', 'Lost'].forEach(s => {
+    totals[s] = clientsState.filter(c => c.status === s).length;
+  });
+
+  Object.entries(totals).forEach(([status, count]) => {
+    const chip = document.getElementById(`chip-${status}`);
+    if (chip) chip.textContent = count > 0 ? `${status} (${count})` : status;
+  });
+}
+
+function highlightHTML(text, query) {
+  if (!query || !text) return text;
+  const escapedQuery = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  const reg = new RegExp(`(${escapedQuery})`, 'gi');
+  return text.replace(reg, '<mark class="highlight">$1</mark>');
 }
 
 function buildClientCard(c) {
@@ -128,19 +196,25 @@ function buildClientCard(c) {
     .map(s => `<option value="${s}" ${c.status === s ? 'selected' : ''}>${s}</option>`)
     .join('');
 
+  const nameHTML = highlightHTML(c.name, searchQuery);
+  const compHTML = highlightHTML(c.company || '—', searchQuery);
+
   return `
     <div class="client-card" data-id="${c.id}">
       <div class="client-card-header" onclick="openClientDetail(${c.id})">
         <img src="${avatar}" alt="${c.name}" class="client-avatar"
           onerror="this.src='${avatarUrl(c.name, 56)}'">
         <div class="client-info">
-          <h3 class="client-name">${c.name}</h3>
-          <p class="client-company">${c.company || '—'}</p>
+          <h3 class="client-name">${nameHTML}</h3>
+          <p class="client-company">${compHTML}</p>
           <p class="client-email">${c.email}</p>
         </div>
       </div>
       <div class="client-card-footer">
-        <span class="badge badge-${STATUS_CLASS[c.status] || 'lead'}">${c.status}</span>
+        <div style="display:flex; align-items:center; gap:0.5rem">
+          <span class="badge badge-${STATUS_CLASS[c.status] || 'lead'}">${c.status}</span>
+          <span class="notes-count-badge" title="Notes count">💬 ${(c.notes || []).length}</span>
+        </div>
         <span class="deal-value">$${(c.dealValue || 0).toLocaleString()}</span>
         <select class="status-select" data-id="${c.id}"
           onchange="changeStatus(this)" onclick="event.stopPropagation()"
@@ -156,7 +230,7 @@ function buildClientCard(c) {
 
 // -- STATUS CHANGE (P4.6) --
 
-function changeStatus(selectEl) {
+export function changeStatus(selectEl) {
   const id     = parseInt(selectEl.dataset.id, 10);
   const client = clientsState.find(c => c.id === id);
   if (!client) return;
@@ -168,7 +242,7 @@ function changeStatus(selectEl) {
 
 // -- DELETE (P4.5) --
 
-async function deleteClient(id, event) {
+export async function deleteClient(id, event) {
   event.stopPropagation();
   if (!confirm('Delete this client? This cannot be undone.')) return;
 
@@ -191,14 +265,29 @@ let searchDebounceTimer = null; // holds the pending setTimeout id
 
 function setupToolbar() {
   const searchInput = document.getElementById('search-input');
+  const clearBtn    = document.getElementById('search-clear');
+
   if (searchInput) {
     searchInput.addEventListener('input', e => {
-      // Debounce: cancel any pending render, wait 300ms after last keystroke
+      // Show/hide clear button
+      if (clearBtn) clearBtn.style.display = e.target.value ? 'flex' : 'none';
+
+      // Debounce: wait 300ms after last keystroke before re-rendering
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(() => {
         searchQuery = e.target.value;
         renderClients(getVisibleClients());
       }, 300);
+    });
+  }
+
+  if (clearBtn) {
+    clearBtn.addEventListener('click', () => {
+      searchInput.value  = '';
+      clearBtn.style.display = 'none';
+      searchQuery = '';
+      renderClients(getVisibleClients());
+      searchInput.focus();
     });
   }
 
@@ -241,7 +330,7 @@ function setupAddClientModal() {
 }
 
 /** Closes the add/edit modal and resets its mode back to "add" */
-function closeAddModal() {
+export function closeAddModal() {
   document.getElementById('add-client-modal').classList.remove('modal-open');
   document.getElementById('add-modal-title').textContent = 'Add New Client';
   document.getElementById('add-submit-btn').textContent  = 'Add Client';
@@ -249,7 +338,7 @@ function closeAddModal() {
 }
 
 /** Opens the shared modal pre-filled with the client's existing data (edit mode) */
-function openEditModal(id, event) {
+export function openEditModal(id, event) {
   if (event) event.stopPropagation(); // prevent card click opening detail modal
 
   const client = clientsState.find(c => c.id === id);
@@ -395,7 +484,7 @@ function setupDetailModal() {
   modal.addEventListener('click', e => { if (e.target === modal) closeModal(); });
 }
 
-function openClientDetail(id) {
+export function openClientDetail(id) {
   const client = clientsState.find(c => c.id === id);
   if (!client) return;
 
@@ -423,6 +512,22 @@ function openClientDetail(id) {
   document.getElementById('add-note-btn').onclick = () => addNote(id);
   document.getElementById('remind-btn').onclick   = () => setReminder(id, client.name);
   setupCallTimer(id); // wire up call timer for this client
+
+  // Clipboard copy helpers (bonus)
+  const emailEl = document.getElementById('detail-email');
+  if (emailEl) {
+    emailEl.onclick = () => {
+      navigator.clipboard.writeText(client.email);
+      showToast('Email copied to clipboard! 📋', 'success', 2000);
+    };
+  }
+  const phoneEl = document.getElementById('detail-phone');
+  if (phoneEl && client.phone) {
+    phoneEl.onclick = () => {
+      navigator.clipboard.writeText(client.phone);
+      showToast('Phone copied to clipboard! 📋', 'success', 2000);
+    };
+  }
 
   modal.classList.add('modal-open');
 }
@@ -525,41 +630,6 @@ function stopCallTimer() {
 
 // -- SHARED HELPERS --
 
-/**
- * Shows an error message under a form field and marks it red.
- * Passing a scope element limits querySelector to that form.
- */
-function showError(fieldId, message, scope) {
-  const field = (scope || document).querySelector('#' + fieldId) || document.getElementById(fieldId);
-  if (!field) return;
-
-  field.classList.add('input-error');
-
-  let err = field.parentElement.querySelector('.field-error');
-  if (!err) {
-    err = document.createElement('span');
-    err.className = 'field-error';
-    field.parentElement.appendChild(err);
-  }
-  err.textContent = message;
-
-  field.addEventListener('input', () => {
-    field.classList.remove('input-error');
-    field.parentElement.querySelector('.field-error')?.remove();
-  }, { once: true });
-}
-
-function clearErrors(scope) {
-  const root = scope || document;
-  root.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
-  root.querySelectorAll('.field-error').forEach(el => el.remove());
-}
-
-function isValidEmail(email) {
-  const at = email.indexOf('@');
-  return at !== -1 && email.slice(at + 1).includes('.');
-}
-
 /** Generates a UI-Avatars URL for a given name and size */
 function avatarUrl(name, size) {
   return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6c63ff&color=fff&size=${size}`;
@@ -568,11 +638,6 @@ function avatarUrl(name, size) {
 function setListZone(html) {
   const el = document.getElementById('clients-list');
   if (el) el.innerHTML = html;
-}
-
-function setText(id, value) {
-  const el = document.getElementById(id);
-  if (el) el.textContent = value;
 }
 
 // -- CSV EXPORT (bonus) --

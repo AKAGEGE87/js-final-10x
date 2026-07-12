@@ -2,7 +2,7 @@
 
 A client relationship management (CRM) web application built with Vanilla JavaScript as a final exam project for the JavaScript module.
 
-Live Demo: **[deploy link here — add after Vercel/Netlify deployment]**
+Live Demo: **[https://10x-crm-akaki.vercel.app](https://10x-crm-akaki.vercel.app)**
 
 ---
 
@@ -36,7 +36,7 @@ No build step required — this is a plain HTML/CSS/JS project.
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/10x-crm-YOUR_NAME.git
+   git clone https://github.com/AKAGEGE87/10x-crm-akaki.git
    ```
 2. Open `index.html` in your browser directly, **or** use a local dev server (e.g. VS Code Live Server extension) to avoid any CORS issues.
 
