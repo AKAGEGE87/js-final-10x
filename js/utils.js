@@ -104,3 +104,13 @@ export function setupPasswordToggles(scope = document) {
     }
   });
 }
+
+/**
+ * Generates a UI-Avatars URL for a given name and size
+ * @param {string} name
+ * @param {number} size
+ * @returns {string}
+ */
+export function avatarUrl(name, size) {
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6c63ff&color=fff&size=${size}`;
+}

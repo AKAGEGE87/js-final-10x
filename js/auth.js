@@ -83,6 +83,13 @@ export function initLogin() {
   document.documentElement.setAttribute('data-theme', getTheme());
   $('#login-form').addEventListener('submit', handleLogin);
   setupPasswordToggles();
+
+  // Check if session expired
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('expired') === '1') {
+    showToast('Session expired for security! Please log in again.', 'warning', 4000);
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
 }
 
 function handleLogin(e) {

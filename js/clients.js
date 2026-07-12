@@ -8,7 +8,7 @@ import { requireAuth } from './guard.js';
 import { initNav } from './nav.js';
 import { getStoredClients, saveClients, clearClients } from './storage.js';
 import { showToast } from './toast.js';
-import { isValidEmail, showError, clearErrors, setText, $, $$, escapeHTML, STATUS_CLASS } from './utils.js';
+import { isValidEmail, showError, clearErrors, setText, $, $$, escapeHTML, STATUS_CLASS, avatarUrl } from './utils.js';
 
 // -- State --
 let clientsState   = [];      // source of truth (loaded from localStorage or API)
@@ -644,9 +644,7 @@ function stopCallTimer() {
 
 // -- SHARED HELPERS --
 
-function avatarUrl(name, size) {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=6c63ff&color=fff&size=${size}`;
-}
+
 
 function setListZone(html) {
   const el = $('#clients-list');

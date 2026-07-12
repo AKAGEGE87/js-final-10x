@@ -5,7 +5,7 @@
 import { requireAuth } from './guard.js';
 import { initNav } from './nav.js';
 import { getCurrentUser, getStoredClients, saveClients } from './storage.js';
-import { $, escapeHTML, setText } from './utils.js';
+import { $, escapeHTML, setText, avatarUrl } from './utils.js';
 
 let dashboardClients = []; // local state
 
@@ -162,7 +162,7 @@ function renderRecentClients() {
           src="${c.image || ''}"
           alt="${safeName}"
           class="client-avatar-sm"
-          onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(safeName)}&background=6c63ff&color=fff&size=40'"
+          onerror="this.src='${avatarUrl(safeName, 40)}'"
         >
         <div class="recent-client-info">
           <span class="recent-client-name">${safeName}</span>

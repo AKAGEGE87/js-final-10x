@@ -24,8 +24,7 @@ export function requireAuth() {
 
   if (now - loginTime > fifteenMinutes) {
     clearSession();
-    alert('Session expired for security! Please log in again.');
-    window.location.href = 'index.html';
+    window.location.href = 'index.html?expired=1';
     return false;
   }
 
